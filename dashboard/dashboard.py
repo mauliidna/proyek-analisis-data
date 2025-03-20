@@ -44,7 +44,7 @@ fig = px.bar(
     text="Number of Orders"
 )
 fig.update_traces(texttemplate='%{text}', textposition='outside')
-fig.update_yaxes(tickformat=',', dtick=10000)
+fig.update_yaxes(dtick=10000)
 
 # Display in Streamlit
 st.plotly_chart(fig)
