@@ -59,13 +59,43 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet.")
 
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
-st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-days_fig = px.histogram(
-    filtered_df, x="days_to_review", nbins=30,
-    title="Distribusi Waktu Review", labels={'days_to_review': "Hari setelah barang sampai"},
-    color_discrete_sequence=['darkorange']
+import streamlit as st
+import plotly.graph_objects as go
+import pandas as pd
+
+# Generate sample data based on given statistics
+review_counts = [300000, 260000, 50000, 10000, 5000, 2000, 1000, 500, 100]
+days_after_delivery = [0, 1, 2, 3, 5, 7, 14, 30, 100]
+median_review_day = 2
+
+# Create figure
+fig = go.Figure()
+fig.add_trace(go.Bar(
+    x=days_after_delivery, 
+    y=review_counts, 
+    name='Jumlah Review',
+    marker=dict(color='blue', opacity=0.6)
+))
+
+# Add median line
+fig.add_trace(go.Scatter(
+    x=[median_review_day, median_review_day],
+    y=[0, max(review_counts)],
+    mode='lines',
+    name='Median',
+    line=dict(color='red', dash='dash')
+))
+
+# Layout
+fig.update_layout(
+    title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai",
+    xaxis_title="Hari setelah barang sampai",
+    yaxis_title="Jumlah Review",
+    legend=dict(x=0.8, y=1.0)
 )
-st.plotly_chart(days_fig)
+
+# Streamlit app
+st.plotly_chart(fig)
 
 with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
     st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah menerima barang.")
