@@ -41,11 +41,11 @@ filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_revi
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
 st.subheader("Number of Orders by Payment Method")
 plt.figure(figsize=(8, 6))
-sns.countplot(x='payment_type', data=payment_df)
+sns.countplot(x='payment_type', data=payment_df)  # Menggunakan filtered_df di sini
 plt.title('Number of Orders by Payment Method')
 plt.xlabel('Payment Method')
 plt.ylabel('Number of Orders')
-plt.show()
+st.pyplot(plt)  # Mengganti plt.show() dengan st.pyplot()
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
@@ -54,25 +54,23 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- **Boleto sebagai Alternatif:** Metode pembayaran populer kedua, digunakan oleh pelanggan yang tidak memiliki kartu kredit atau lebih memilih pembayaran tunai.")
     st.write("- **Voucher & Debit Card Kurang Populer:** Biasanya digunakan dalam situasi tertentu seperti promo atau cashback.")
     st.write("- **Kategori 'not_defined' Hampir Tidak Ada:** Mungkin terjadi karena kesalahan data atau metode pembayaran yang sangat jarang digunakan.")
-
     st.markdown("**Potensi Tindakan Bisnis:**")
     st.write("- Menawarkan insentif untuk pembayaran non-kartu kredit, seperti diskon untuk boleto.")
     st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
 
-
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 
 # Menangani nilai negatif dengan mengatur nilai minimum ke 0
-merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
+df["days_to_review"] = df["days_to_review"].clip(lower=0)  # Ganti merged_df dengan df
 
 # Plot distribusi
 plt.figure(figsize=(10, 5))
-sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
+sns.histplot(df["days_to_review"], bins=50, kde=True)  # Menggunakan df di sini
 
 # Garis median
-plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+plt.axvline(df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
 
 # Label dan judul
 plt.xlabel("Hari setelah barang sampai")
@@ -84,7 +82,7 @@ plt.grid(True)
 # Menampilkan plot di Streamlit
 st.pyplot(plt)
 
-with st.expander("ℹ️ Pen jelasan Grafik: Distribusi Waktu Pembuatan Review Setelah Barang Sampai"):
+with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review Setelah Barang Sampai"):
     st.write("Grafik ini menunjukkan distribusi waktu yang dibutuhkan pelanggan untuk memberikan review setelah barang diterima. Dengan melihat distribusi ini, kita dapat memahami seberapa cepat pelanggan memberikan feedback.")
     st.markdown("**Insight:**")
     st.write("- **Puncak di Awal:** Banyak pelanggan memberikan review dalam waktu singkat setelah menerima barang, menunjukkan kepuasan atau ketidakpuasan yang segera.")
