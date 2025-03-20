@@ -66,44 +66,49 @@ st.plotly_chart(fig)
 # Grafik 2: Distribusi Waktu Pembuatan Review
 import streamlit as st
 import pandas as pd
-import plotly.figure_factory as ff
-import numpy as np
+import plotly.express as px
 
-# Generate example data (replace with actual data)
-np.random.seed(42)
-data = np.random.exponential(scale=2, size=500000)  # Example distribution
+# Data
+data = {
+    "days_after_delivery": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 38, 43, 44, 45, 46, 47, 48, 50, 
+        51, 52, 55, 56, 59, 66, 88, 106
+    ],
+    "review_count": [
+        98074, 1079, 341, 145, 129, 134, 116, 119, 84, 48, 45, 44, 46, 21, 32, 32, 
+        12, 21, 22, 12, 16, 7, 9, 8, 3, 1, 2, 2, 4, 3, 2, 1, 2, 2, 1, 1, 1, 4, 1, 
+        1, 1, 2, 1, 1, 2, 1, 1, 12
+    ]
+}
 
-# Compute histogram data
-hist_data = [data]
-group_labels = ['Hari setelah barang sampai']
+# Convert to DataFrame
+df = pd.DataFrame(data)
 
-# Compute median
-median_value = np.median(data)
+# Calculate median
+median_value = df["days_after_delivery"].median()
 
 # Streamlit App
 st.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 
-# Create Histogram using Plotly
-fig = ff.create_distplot(
-    hist_data, 
-    group_labels, 
-    show_hist=True, 
-    show_rug=False,
-    colors=["steelblue"]
+# Create Bar Chart using Plotly
+fig = px.bar(
+    df, 
+    x="days_after_delivery", 
+    y="review_count", 
+    labels={"days_after_delivery": "Hari setelah barang sampai", "review_count": "Jumlah Review"},
+    title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai",
+    color_discrete_sequence=["steelblue"]
 )
 
-# Add median line
-fig.add_vline(x=median_value, line=dict(color="red", dash="dash"), name="Median")
-
-# Update layout
-fig.update_layout(
-    xaxis_title="Hari setelah barang sampai",
-    yaxis_title="Jumlah Review",
-    legend_title_text="",
+# Add Median Line
+fig.add_vline(
+    x=median_value, 
+    line_dash="dash", 
+    line_color="red", 
+    annotation_text=f"Median ({median_value})", 
+    annotation_position="top right"
 )
 
 # Display Chart
 st.plotly_chart(fig)
-
-# Display Median Value
-st.write(f"**Median waktu pembuatan review:** {median_value:.2f} hari")
