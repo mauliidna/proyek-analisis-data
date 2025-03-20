@@ -1,10 +1,15 @@
 import pandas as pd
 import plotly.express as px
 
-# Baca dataset
-order_df = pd.read_csv("order_data.csv")
-payment_df = pd.read_csv("payment_data.csv")
-review_df = pd.read_csv("review_data.csv")
+# URL file CSV di GitHub
+url_order = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/main/order_data.csv"
+url_payment = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/main/payment_data.csv"
+url_review = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/main/review_data.csv"
+
+# Baca dataset dari GitHub
+order_df = pd.read_csv(url_order)
+payment_df = pd.read_csv(url_payment)
+review_df = pd.read_csv(url_review)
 
 # Merge data
 order_df = order_df.merge(payment_df[['order_id', 'payment_value', 'payment_type']], on='order_id', how='left')
