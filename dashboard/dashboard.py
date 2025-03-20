@@ -41,12 +41,12 @@ filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_revi
 st.subheader("Number of Orders by Payment Method")
 payment_counts = filtered_df["payment_type"].value_counts()
 
-fig, ax = plt.subplots()
-ax.bar(payment_counts.index, payment_counts.values)
-ax.set_xlabel("Payment Method")
-ax.set_ylabel("Number of Orders")
-ax.set_title("Number of Orders by Payment Method")
-st.pyplot(fig)
+plt.figure(figsize=(8, 6))
+sns.countplot(x='payment_type', data=payment_df)
+plt.title('Number of Orders by Payment Method')
+plt.xlabel('Payment Method')
+plt.ylabel('Number of Orders')
+plt.show()
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
