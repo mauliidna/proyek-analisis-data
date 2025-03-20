@@ -32,10 +32,6 @@ day_range = st.sidebar.slider("Rentang Waktu Review (hari)", day_min, day_max, (
 # Filter Data
 filtered_df = all_df.loc[(all_df["payment_type"].isin(selected_payment)) & (all_df["days_to_review"].between(day_range[0], day_range[1]))]
 
-# Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
-import streamlit as st
-import plotly.express as px
-
 # Data
 payment_methods = ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
 order_counts = [77000, 20000, 6000, 2000, 500]
@@ -43,10 +39,16 @@ order_counts = [77000, 20000, 6000, 2000, 500]
 data = {"Payment Method": payment_methods, "Number of Orders": order_counts}
 
 # Plot
-fig = px.bar(data, x="Payment Method", y="Number of Orders", title="Number of Orders by Payment Method")
+fig = px.bar(
+    data, x="Payment Method", y="Number of Orders", title="Number of Orders by Payment Method",
+    text="Number of Orders"
+)
+fig.update_traces(texttemplate='%{text}', textposition='outside')
+fig.update_yaxes(tickformat=',')
 
 # Display in Streamlit
 st.plotly_chart(fig)
+
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan.")
