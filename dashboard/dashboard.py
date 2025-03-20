@@ -59,6 +59,23 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
 
+base_url = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/"
+
+# Baca dataset langsung dari GitHub
+order_df = pd.read_csv(base_url + "orders_dataset.csv")
+payment_df = pd.read_csv(base_url + "order_payments_dataset.csv")
+review_df = pd.read_csv(base_url + "order_reviews_dataset.csv")
+
+# Merge data
+merged_df = order_df.merge(payment_df[['order_id', 'payment_value', 'payment_type']], on='order_id', how='left')
+merged_df = merged_df.merge(review_df[['order_id', 'review_creation_date']], on='order_id', how='left')
+
+# Cek hasil
+print(merged_df.head())
+
+# Save merged_df to CSV
+merged_df.to_csv("all_data.csv", index=False) # Save the merged dataframe as "all_data.csv"
+
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 
@@ -73,7 +90,7 @@ plt.figure(figsize=(10, 5))
 sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
 
 # Garis median
-plt.axvline(df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
 
 # Label dan judul
 plt.xlabel("Hari setelah barang sampai")
