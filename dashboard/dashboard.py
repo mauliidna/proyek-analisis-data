@@ -1,5 +1,10 @@
 import pandas as pd
 import plotly.express as px
+import streamlit as st
+
+# Judul Dashboard
+st.subheader("MC009D5X2352 | Mauldina Rahmawati")
+st.title("Dashboard Analisis Review dan Pembayaran")
 
 # Base URL file CSV di GitHub
 base_url = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/main/"
@@ -21,20 +26,45 @@ order_df["review_creation_date"] = pd.to_datetime(order_df["review_creation_date
 order_df["days_to_review"] = (order_df["review_creation_date"] - order_df["order_delivered_customer_date"]).dt.days
 
 # Hapus nilai negatif
-order_df = order_df[order_df["days_to_review"] >= 0]
+df = order_df[order_df["days_to_review"] >= 0]
 
-# Kategorisasi harga
-bins = [0, 50, 100, 200, 500, 1000, 5000, 10000]
-labels = ["<50", "50-100", "100-200", "200-500", "500-1000", "1000-5000", ">5000"]
-order_df["price_range"] = pd.cut(order_df["payment_value"], bins=bins, labels=labels)
+# Sidebar Filter
+st.sidebar.header("Filter Data")
+payment_options = df["payment_type"].unique()
+selected_payment = st.sidebar.multiselect("Pilih Metode Pembayaran", payment_options, default=payment_options)
+day_range = st.sidebar.slider("Rentang Waktu Review (hari)", int(df["days_to_review"].min()), int(df["days_to_review"].max()), (int(df["days_to_review"].min()), int(df["days_to_review"].max())))
 
-# Visualisasi metode pembayaran berdasarkan rentang harga
-fig_payment = px.bar(order_df, x="price_range", color="payment_type", barmode="stack", opacity=0.8,
-                     title="Metode Pembayaran Berdasarkan Rentang Harga Barang",
-                     labels={"price_range": "Rentang Harga", "payment_type": "Metode Pembayaran"})
-fig_payment.show()
+# Filter Data
+filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_review"].between(day_range[0], day_range[1]))]
 
-# Visualisasi distribusi waktu pembuatan review
-fig_review = px.histogram(order_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review Setelah Barang Sampai",
-                          labels={"days_to_review": "Hari setelah barang sampai"})
-fig_review.show()
+# Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
+st.subheader("Number of Orders by Payment Method")
+payment_counts = filtered_df["payment_type"].value_counts()
+payment_fig = px.bar(payment_counts, x=payment_counts.index, y=payment_counts.values, labels={'x': "Payment Method", 'y': "Number of Orders"}, title="Number of Orders by Payment Method")
+st.plotly_chart(payment_fig)
+
+with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
+    st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
+    st.markdown("**Insight:**")
+    st.write("- **Kartu Kredit Dominan:** Mayoritas pesanan dibayar dengan kartu kredit, kemungkinan karena kemudahan transaksi dan fasilitas cicilan.")
+    st.write("- **Boleto sebagai Alternatif:** Metode pembayaran populer kedua, digunakan oleh pelanggan yang tidak memiliki kartu kredit atau lebih memilih pembayaran tunai.")
+    st.write("- **Voucher & Debit Card Kurang Populer:** Biasanya digunakan dalam situasi tertentu seperti promo atau cashback.")
+    st.write("- **Kategori 'not_defined' Hampir Tidak Ada:** Mungkin terjadi karena kesalahan data atau metode pembayaran yang sangat jarang digunakan.")
+    
+    st.markdown("**Potensi Tindakan Bisnis:**")
+    st.write("- Menawarkan insentif untuk pembayaran non-kartu kredit, seperti diskon untuk boleto.")
+    st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
+    st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
+
+# Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
+st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+days_fig = px.histogram(filtered_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review", labels={'days_to_review': "Hari setelah barang sampai"})
+st.plotly_chart(days_fig)
+
+with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
+    st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya. Dari pola distribusi, kita bisa memahami kebiasaan pelanggan dalam memberikan feedback.")
+    
+    st.markdown("**Insight:**")
+    st.write("- **Mayoritas Review Dibuat Cepat:** Sebagian besar pelanggan memberikan review pada hari barang tiba atau beberapa hari setelahnya.")
+    st.write("- **Review Lama Setelah Barang Sampai (Outlier Positif):** Beberapa pelanggan menunggu hingga mereka benar-benar yakin atau setelah menerima pengingat dari platform.")
+    st.write("- **Median 0 Hari:** Setengah dari total review diberikan pada hari barang sampai, menunjukkan adanya dorongan kuat dari notifikasi atau insentif dari e-commerce.")
