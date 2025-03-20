@@ -1,5 +1,5 @@
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
 import streamlit as st
 
 # Judul Dashboard
@@ -40,8 +40,13 @@ filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_revi
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
 st.subheader("Number of Orders by Payment Method")
 payment_counts = filtered_df["payment_type"].value_counts()
-payment_fig = px.bar(payment_counts, x=payment_counts.index, y=payment_counts.values, labels={'x': "Payment Method", 'y': "Number of Orders"}, title="Number of Orders by Payment Method")
-st.plotly_chart(payment_fig)
+
+fig, ax = plt.subplots()
+ax.bar(payment_counts.index, payment_counts.values)
+ax.set_xlabel("Payment Method")
+ax.set_ylabel("Number of Orders")
+ax.set_title("Number of Orders by Payment Method")
+st.pyplot(fig)
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
@@ -58,8 +63,12 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
 
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-days_fig = px.histogram(filtered_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review", labels={'days_to_review': "Hari setelah barang sampai"})
-st.plotly_chart(days_fig)
+fig, ax = plt.subplots()
+ax.hist(filtered_df["days_to_review"], bins=50)
+ax.set_xlabel("Hari setelah barang sampai")
+ax.set_ylabel("Jumlah Review")
+ax.set_title("Distribusi Waktu Review")
+st.pyplot(fig)
 
 with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
     st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya. Dari pola distribusi, kita bisa memahami kebiasaan pelanggan dalam memberikan feedback.")
