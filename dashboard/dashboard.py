@@ -64,11 +64,46 @@ fig.update_layout(yaxis_range=[0, 80000])
 # Display Chart
 st.plotly_chart(fig)
 # Grafik 2: Distribusi Waktu Pembuatan Review
-fig_review_time = px.histogram(
-    filtered_df,
-    x="days_to_review",
-    title="Distribusi Waktu Pembuatan Review",
-    labels={"days_to_review": "Hari setelah barang sampai"},
-    nbins=50
+import streamlit as st
+import pandas as pd
+import plotly.figure_factory as ff
+import numpy as np
+
+# Generate example data (replace with actual data)
+np.random.seed(42)
+data = np.random.exponential(scale=2, size=500000)  # Example distribution
+
+# Compute histogram data
+hist_data = [data]
+group_labels = ['Hari setelah barang sampai']
+
+# Compute median
+median_value = np.median(data)
+
+# Streamlit App
+st.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+
+# Create Histogram using Plotly
+fig = ff.create_distplot(
+    hist_data, 
+    group_labels, 
+    show_hist=True, 
+    show_rug=False,
+    colors=["steelblue"]
 )
-st.plotly_chart(fig_review_time)
+
+# Add median line
+fig.add_vline(x=median_value, line=dict(color="red", dash="dash"), name="Median")
+
+# Update layout
+fig.update_layout(
+    xaxis_title="Hari setelah barang sampai",
+    yaxis_title="Jumlah Review",
+    legend_title_text="",
+)
+
+# Display Chart
+st.plotly_chart(fig)
+
+# Display Median Value
+st.write(f"**Median waktu pembuatan review:** {median_value:.2f} hari")
