@@ -1,114 +1,66 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # Judul Dashboard
 st.subheader("MC009D5X2352 | Mauldina Rahmawati")
 st.title("Dashboard Analisis Review dan Pembayaran")
 
-# Base URL file CSV di GitHub
-base_url = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/main/"
+# Load dataset dari folder
+df_order = pd.read_csv("data/orders_dataset.csv")  
+df_review = pd.read_csv("data/order_reviews_dataset.csv")  
+df_payments = pd.read_csv("data/order_payments_dataset.csv")  
 
-# Baca dataset dari GitHub
-order_df = pd.read_csv(base_url + "orders_dataset.csv")
-payment_df = pd.read_csv(base_url + "order_payments_dataset.csv")
-review_df = pd.read_csv(base_url + "order_reviews_dataset.csv")
+# Gabungkan dataset berdasarkan 'order_id'
+all_df = df_payments.merge(df_review, on="order_id").merge(df_order, on="order_id")
 
-# Merge data
-order_df = order_df.merge(payment_df[['order_id', 'payment_value', 'payment_type']], on='order_id', how='left')
-order_df = order_df.merge(review_df[['order_id', 'review_creation_date']], on='order_id', how='left')
+# Konversi ke datetime
+all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"])
+all_df["review_creation_date"] = pd.to_datetime(all_df["review_creation_date"])
 
-# Konversi tanggal ke format datetime
-order_df["order_delivered_customer_date"] = pd.to_datetime(order_df["order_delivered_customer_date"])
-order_df["review_creation_date"] = pd.to_datetime(order_df["review_creation_date"])
+# Hitung selisih waktu dalam hari antara review dan barang sampai
+all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
 
-# Hitung selisih hari antara review dan barang sampai
-order_df["days_to_review"] = (order_df["review_creation_date"] - order_df["order_delivered_customer_date"]).dt.days
-
-# Hapus nilai negatif
-df = order_df[order_df["days_to_review"] >= 0]
+# Hapus nilai negatif dari days_to_review
+all_df = all_df[all_df["days_to_review"] >= 0]
 
 # Sidebar Filter
 st.sidebar.header("Filter Data")
-payment_options = df["payment_type"].unique()
+payment_options = all_df["payment_type"].unique()
 selected_payment = st.sidebar.multiselect("Pilih Metode Pembayaran", payment_options, default=payment_options)
-day_range = st.sidebar.slider("Rentang Waktu Review (hari)", int(df["days_to_review"].min()), int(df["days_to_review"].max()), (int(df["days_to_review"].min()), int(df["days_to_review"].max())))
+day_range = st.sidebar.slider("Rentang Waktu Review (hari)", int(all_df["days_to_review"].min()), int(all_df["days_to_review"].max()), (int(all_df["days_to_review"].min()), int(all_df["days_to_review"].max())))
 
 # Filter Data
-filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_review"].between(day_range[0], day_range[1]))]
+filtered_df = all_df[(all_df["payment_type"].isin(selected_payment)) & (all_df["days_to_review"].between(day_range[0], day_range[1]))]
 
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
 st.subheader("Number of Orders by Payment Method")
-plt.figure(figsize=(8, 6))
-sns.countplot(x='payment_type', data=payment_df)  # Menggunakan filtered_df di sini
-plt.title('Number of Orders by Payment Method')
-plt.xlabel('Payment Method')
-plt.ylabel('Number of Orders')
-st.pyplot(plt)  # Mengganti plt.show() dengan st.pyplot()
+payment_counts = filtered_df["payment_type"].value_counts()
+payment_fig = px.bar(payment_counts, x=payment_counts.index, y=payment_counts.values, labels={'x': "Payment Method", 'y': "Number of Orders"}, title="Number of Orders by Payment Method")
+st.plotly_chart(payment_fig)
 
-with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
+with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method "):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
     st.markdown("**Insight:**")
     st.write("- **Kartu Kredit Dominan:** Mayoritas pesanan dibayar dengan kartu kredit, kemungkinan karena kemudahan transaksi dan fasilitas cicilan.")
     st.write("- **Boleto sebagai Alternatif:** Metode pembayaran populer kedua, digunakan oleh pelanggan yang tidak memiliki kartu kredit atau lebih memilih pembayaran tunai.")
     st.write("- **Voucher & Debit Card Kurang Populer:** Biasanya digunakan dalam situasi tertentu seperti promo atau cashback.")
     st.write("- **Kategori 'not_defined' Hampir Tidak Ada:** Mungkin terjadi karena kesalahan data atau metode pembayaran yang sangat jarang digunakan.")
+    
     st.markdown("**Potensi Tindakan Bisnis:**")
     st.write("- Menawarkan insentif untuk pembayaran non-kartu kredit, seperti diskon untuk boleto.")
     st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
 
-base_url = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/"
-
-# Baca dataset langsung dari GitHub
-order_df = pd.read_csv(base_url + "orders_dataset.csv")
-payment_df = pd.read_csv(base_url + "order_payments_dataset.csv")
-review_df = pd.read_csv(base_url + "order_reviews_dataset.csv")
-
-# Merge data
-merged_df = order_df.merge(payment_df[['order_id', 'payment_value', 'payment_type']], on='order_id', how='left')
-merged_df = merged_df.merge(review_df[['order_id', 'review_creation_date']], on='order_id', how='left')
-
-# Cek hasil
-print(merged_df.head())
-
-# Save merged_df to CSV
-merged_df.to_csv("all_data.csv", index=False) # Save the merged dataframe as "all_data.csv"
-
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+days_fig = px.histogram(filtered_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review", labels={'days_to_review': "Hari setelah barang sampai"})
+st.plotly_chart(days_fig)
 
-# Menghitung days_to_review
-merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
-
-# Menangani nilai negatif dengan mengatur nilai minimum ke 0
-merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
-
-# Plot distribusi
-plt.figure(figsize=(10, 5))
-sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
-
-# Garis median
-plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
-
-# Label dan judul
-plt.xlabel("Hari setelah barang sampai")
-plt.ylabel("Jumlah Review")
-plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-plt.legend()
-plt.grid(True)
-
-# Menampilkan plot di Streamlit
-st.pyplot(plt)
-
-with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review Setelah Barang Sampai"):
-    st.write("Grafik ini menunjukkan distribusi waktu yang dibutuhkan pelanggan untuk memberikan review setelah barang diterima. Dengan melihat distribusi ini, kita dapat memahami seberapa cepat pelanggan memberikan feedback.")
-    st.markdown("**Insight:**")
-    st.write("- **Puncak di Awal:** Banyak pelanggan memberikan review dalam waktu singkat setelah menerima barang, menunjukkan kepuasan atau ketidakpuasan yang segera.")
-    st.write("- **Beberapa Review Tertunda:** Ada juga pelanggan yang memberikan review setelah beberapa waktu, mungkin karena mereka ingin memastikan kualitas produk sebelum memberikan penilaian.")
+with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
+    st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya. Dari pola distribusi, kita bisa memahami kebiasaan pelanggan dalam memberikan feedback.")
     
-    st.markdown("**Potensi Tindakan Bisnis:**")
-    st.write("- Mengirimkan pengingat kepada pelanggan untuk memberikan review setelah beberapa hari menerima barang.")
-    st.write("- Menyediakan insentif untuk review yang lebih cepat, seperti diskon untuk pembelian berikutnya.")
-    st.write("- Menganalisis feedback dari review yang terlambat untuk memahami alasan di balik keterlambatan tersebut.")
+    st.markdown("**Insight:**")
+    st.write("- **Mayoritas Review Dibuat Cepat:** Sebagian besar pelanggan memberikan review pada hari barang tiba atau beberapa hari setelahnya.")
+    st.write("- **Review Lama Setelah Barang Sampai (Outlier Positif):** Beberapa pelanggan menunggu hingga mereka benar-benar yakin atau setelah menerima pengingat dari platform.")
+    st.write("- **Median 0 Hari:** Setengah dari total review diberikan pada hari barang sampai, menunjukkan adanya dorongan kuat dari notifikasi atau insentif dari e-commerce.")
