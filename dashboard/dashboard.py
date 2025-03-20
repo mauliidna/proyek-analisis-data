@@ -42,7 +42,7 @@ data = {"Payment Method": payment_methods, "Number of Orders": order_counts}
 fig = px.bar(
     data, x="Payment Method", y="Number of Orders", title="Number of Orders by Payment Method"
 )
-fig.update_yaxes(dtick=10000)
+fig.update_yaxes(dtick=10000, tickformat='d')
 
 # Display in Streamlit
 st.plotly_chart(fig)
