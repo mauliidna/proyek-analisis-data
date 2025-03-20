@@ -71,10 +71,21 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method "
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
 
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
-st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-days_fig = px.histogram(filtered_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review", labels={'days_to_review': "Hari setelah barang sampai"})
-st.plotly_chart(days_fig)
+st.subheader("Waktu Pembuatan Review Setelah Barang Sampai")
+merged_df["review_creation_date"] = pd.to_datetime(merged_df["review_creation_date"])
+merged_df["order_delivered_customer_date"] = pd.to_datetime(merged_df["order_delivered_customer_date"])
+merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
+merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0) # Menangani nilai negatif dengan mengatur nilai minimum ke 0
 
+fig, ax = plt.subplots(figsize=(10, 5))
+sns.histplot(merged_df["days_to_review"], bins=50, kde=True, ax=ax)
+plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+plt.xlabel("Hari setelah barang sampai")
+plt.ylabel("Jumlah Review")
+plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+plt.legend()
+plt.grid(True)
+st.pyplot(fig)
 with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
     st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya. Dari pola distribusi, kita bisa memahami kebiasaan pelanggan dalam memberikan feedback.")
     
