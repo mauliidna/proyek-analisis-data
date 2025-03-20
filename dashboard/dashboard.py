@@ -64,3 +64,23 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- Menawarkan insentif untuk pembayaran non-kartu kredit, seperti diskon untuk boleto.")
     st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
+
+merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
+
+# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
+
+# Plot distribusi
+plt.figure(figsize=(10, 5))
+sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
+
+# Garis median
+plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+
+# Label dan judul
+plt.xlabel("Hari setelah barang sampai")
+plt.ylabel("Jumlah Review")
+plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+plt.legend()
+plt.grid(True)
+plt.show()
