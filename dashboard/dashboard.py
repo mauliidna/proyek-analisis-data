@@ -9,12 +9,12 @@ st.title("Dashboard Analisis Review dan Pembayaran")
 
 # URL Dataset GitHub
 base_url = "https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/"
-df_order = pd.read_csv(base_url + "orders_dataset.csv")
-df_review = pd.read_csv(base_url + "order_reviews_dataset.csv")
-df_payments = pd.read_csv(base_url + "order_payments_dataset.csv")
+order_df = pd.read_csv(base_url + "orders_dataset.csv")
+review_df = pd.read_csv(base_url + "order_reviews_dataset.csv")
+payment_df = pd.read_csv(base_url + "order_payments_dataset.csv")
 
 # Gabungkan dataset berdasarkan 'order_id'
-all_df = df_payments.merge(df_review, on="order_id").merge(df_order, on="order_id")
+all_df = payment_df.merge(review_df, on="order_id").merge(order_df, on="order_id")
 
 # Konversi ke datetime
 all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"])
