@@ -32,20 +32,26 @@ day_range = st.sidebar.slider("Rentang Waktu Review (hari)", day_min, day_max, (
 # Filter Data
 filtered_df = all_df.loc[(all_df["payment_type"].isin(selected_payment)) & (all_df["days_to_review"].between(day_range[0], day_range[1]))]
 
-# Data
-payment_methods = ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
-order_counts = [77000, 20000, 6000, 2000, 500]
+merged_df["review_creation_date"] = pd.to_datetime(merged_df["review_creation_date"])
+merged_df["order_delivered_customer_date"] = pd.to_datetime(merged_df["order_delivered_customer_date"])
+merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
+# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
 
-data = {"Payment Method": payment_methods, "Number of Orders": order_counts}
+# Plot distribusi
+plt.figure(figsize=(10, 5))
+sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
 
-# Plot
-fig = px.bar(
-    data, x="Payment Method", y="Number of Orders", title="Number of Orders by Payment Method"
-)
-fig.update_yaxes(dtick=10000, tickformat='d')
+# Garis median
+plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
 
-# Display in Streamlit
-st.plotly_chart(fig)
+# Label dan judul
+plt.xlabel("Hari setelah barang sampai")
+plt.ylabel("Jumlah Review")
+plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+plt.legend()
+plt.grid(True)
+plt.show()
 
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
