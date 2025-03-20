@@ -12,7 +12,7 @@ order_df = pd.read_csv(base_url + "orders_dataset.csv")
 review_df = pd.read_csv(base_url + "order_reviews_dataset.csv")
 payment_df = pd.read_csv(base_url + "order_payments_dataset.csv")
 
-# Gabungkan dataset 
+# Gabungkan dataset
 all_df = pd.merge(order_df, payment_df, on='order_id', how='left')
 all_df = pd.merge(all_df, review_df, on='order_id', how='left')
 
@@ -23,9 +23,9 @@ date_cols = ['order_purchase_timestamp', 'order_approved_at', 'order_delivered_c
 for col in date_cols:
     all_df[col] = pd.to_datetime(all_df[col], errors='coerce')
 
-# Hitung selisih waktu review
+# Hitung selisih waktu review dan filter nilai negatif
 all_df['days_to_review'] = (all_df['review_creation_date'] - all_df['order_delivered_customer_date']).dt.days
-all_df = all_df[all_df['days_to_review'] >= 0] 
+all_df = all_df[all_df['days_to_review'] >= 0]
 
 # Sidebar Filter
 st.sidebar.header("Filter Data")
@@ -36,13 +36,15 @@ day_range = st.sidebar.slider("Rentang Waktu Review (hari)", int(all_df["days_to
 # Filter Data
 filtered_df = all_df[(all_df["payment_type"].isin(selected_payment)) & (all_df["days_to_review"].between(day_range[0], day_range[1]))]
 
+# --- Visualisasi ---
+
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
-payment_counts = filtered_df["payment_type"].value_counts()
 fig_payment = px.bar(
-    x=payment_counts.index,
-    y=payment_counts.values,
+    filtered_df.groupby('payment_type').size().reset_index(name='count'),  # Group by and count
+    x='payment_type',
+    y='count',
     title="Jumlah Pesanan Berdasarkan Metode Pembayaran",
-    labels={"x": "Metode Pembayaran", "y": "Jumlah Pesanan"}
+    labels={'payment_type': "Metode Pembayaran", 'count': "Jumlah Pesanan"}
 )
 st.plotly_chart(fig_payment)
 
@@ -52,6 +54,6 @@ fig_review_time = px.histogram(
     x="days_to_review",
     title="Distribusi Waktu Pembuatan Review",
     labels={"days_to_review": "Hari setelah barang sampai"},
-    nbins=50 
+    nbins=50
 )
 st.plotly_chart(fig_review_time)
