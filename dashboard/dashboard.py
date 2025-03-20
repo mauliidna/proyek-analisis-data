@@ -100,4 +100,4 @@ with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review Se
 
     st.markdown("**Potensi Tindakan Bisnis:**")
     st.write("- Mendorong pelanggan untuk memberikan review lebih cepat melalui pengingat atau insentif.")
-    st.write("- Menganalisis faktor-faktor yang menyebabkan keterlambatan dalam memberikan review untuk meningkatkan pengalaman pelanggan.") ```python
+    st.write("- Menganalisis faktor-faktor yang menyebabkan keterlambatan dalam memberikan review untuk meningkatkan pengalaman pelanggan.")
