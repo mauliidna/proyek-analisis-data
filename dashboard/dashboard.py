@@ -39,14 +39,28 @@ filtered_df = all_df[(all_df["payment_type"].isin(selected_payment)) & (all_df["
 # --- Visualisasi ---
 
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
-fig_payment = px.bar(
-    filtered_df.groupby('payment_type').size().reset_index(name='count'),  # Group by and count
-    x='payment_type',
-    y='count',
-    title="Jumlah Pesanan Berdasarkan Metode Pembayaran",
-    labels={'payment_type': "Metode Pembayaran", 'count': "Jumlah Pesanan"}
-)
-st.plotly_chart(fig_payment)
+payment_data = {
+    "payment_type": ["credit_card", "boleto", "voucher", "debit_card", "not_defined"],
+    "count": [76795, 19784, 5775, 1529, 3]
+}
+
+# Convert to DataFrame
+df = pd.DataFrame(payment_data)
+
+# Streamlit App
+st.title("Number of Orders by Payment Method")
+
+# Create Bar Chart
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.bar(df["payment_type"], df["count"], color='steelblue')
+ax.set_xlabel("Payment Method")
+ax.set_ylabel("Number of Orders")
+ax.set_title("Number of Orders by Payment Method")
+ax.set_ylim(0, 80000)  # Adjusting the y-axis for better visualization
+plt.xticks(rotation=45)
+
+# Display Chart
+st.pyplot(fig)
 
 # Grafik 2: Distribusi Waktu Pembuatan Review
 fig_review_time = px.histogram(
