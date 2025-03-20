@@ -12,18 +12,20 @@ order_df = pd.read_csv(base_url + "orders_dataset.csv")
 review_df = pd.read_csv(base_url + "order_reviews_dataset.csv")
 payment_df = pd.read_csv(base_url + "order_payments_dataset.csv")
 
-# Gabungkan dataset berdasarkan 'order_id'
-all_df = payment_df.merge(review_df, on="order_id").merge(order_df, on="order_id")
+# Gabungkan dataset 
+all_df = pd.merge(order_df, payment_df, on='order_id', how='left')
+all_df = pd.merge(all_df, review_df, on='order_id', how='left')
 
-# Konversi ke datetime
-all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"])
-all_df["review_creation_date"] = pd.to_datetime(all_df["review_creation_date"])
+# Konversi kolom ke datetime
+date_cols = ['order_purchase_timestamp', 'order_approved_at', 'order_delivered_carrier_date',
+             'order_delivered_customer_date', 'order_estimated_delivery_date', 'review_creation_date',
+             'review_answer_timestamp']
+for col in date_cols:
+    all_df[col] = pd.to_datetime(all_df[col], errors='coerce')
 
-# Hitung selisih waktu dalam hari antara review dan barang sampai
-all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
-
-# Hapus nilai negatif dari days_to_review
-all_df = all_df[all_df["days_to_review"] >= 0]
+# Hitung selisih waktu review
+all_df['days_to_review'] = (all_df['review_creation_date'] - all_df['order_delivered_customer_date']).dt.days
+all_df = all_df[all_df['days_to_review'] >= 0] 
 
 # Sidebar Filter
 st.sidebar.header("Filter Data")
