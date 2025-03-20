@@ -1,6 +1,7 @@
-import pandas as pd
-import matplotlib.pyplot as plt
 import streamlit as st
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
 
 # Judul Dashboard
 st.subheader("MC009D5X2352 | Mauldina Rahmawati")
