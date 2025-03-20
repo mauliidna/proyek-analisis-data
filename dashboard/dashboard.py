@@ -62,12 +62,15 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 
+# Menghitung days_to_review
+df["days_to_review"] = (df["review_creation_date"] - df["order_delivered_customer_date"]).dt.days
+
 # Menangani nilai negatif dengan mengatur nilai minimum ke 0
-df["days_to_review"] = df["days_to_review"].clip(lower=0)  # Ganti merged_df dengan df
+df["days_to_review"] = df["days_to_review"].clip(lower=0)
 
 # Plot distribusi
 plt.figure(figsize=(10, 5))
-sns.histplot(df["days_to_review"], bins=50, kde=True)  # Menggunakan df di sini
+sns.histplot(df["days_to_review"], bins=50, kde=True)
 
 # Garis median
 plt.axvline(df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
