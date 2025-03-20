@@ -40,10 +40,8 @@ data = {"Payment Method": payment_methods, "Number of Orders": order_counts}
 
 # Plot
 fig = px.bar(
-    data, x="Payment Method", y="Number of Orders", title="Number of Orders by Payment Method",
-    text="Number of Orders"
+    data, x="Payment Method", y="Number of Orders", title="Number of Orders by Payment Method"
 )
-fig.update_traces(texttemplate='%{text}', textposition='outside')
 fig.update_yaxes(dtick=10000)
 
 # Display in Streamlit
