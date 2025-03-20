@@ -44,7 +44,7 @@ payment_counts = filtered_df["payment_type"].value_counts()
 
 # Menggunakan sns.countplot dengan filtered_df
 plt.figure(figsize=(8, 6))
-sns.countplot(x='payment_type', data=filtered_df)
+sns.countplot(x='payment_type', data=payment_df)
 plt.title('Number of Orders by Payment Method')
 plt.xlabel('Payment Method')
 plt.ylabel('Number of Orders')
