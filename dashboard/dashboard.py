@@ -63,13 +63,25 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
 
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
-st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-fig, ax = plt.subplots()
-ax.hist(filtered_df["days_to_review"], bins=50)
-ax.set_xlabel("Hari setelah barang sampai")
-ax.set_ylabel("Jumlah Review")
-ax.set_title("Distribusi Waktu Review")
-st.pyplot(fig)
+merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
+
+# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
+
+# Plot distribusi
+plt.figure(figsize=(10, 5))
+sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
+
+# Garis median
+plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+
+# Label dan judul
+plt.xlabel("Hari setelah barang sampai")
+plt.ylabel("Jumlah Review")
+plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+plt.legend()
+plt.grid(True)
+plt.show()
 
 with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
     st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya. Dari pola distribusi, kita bisa memahami kebiasaan pelanggan dalam memberikan feedback.")
