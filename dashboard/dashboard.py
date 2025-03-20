@@ -48,16 +48,13 @@ df = pd.DataFrame(payment_data)
 st.title("Number of Orders by Payment Method")
 
 # Create Bar Chart
-fig, ax = plt.subplots(figsize=(8, 6))
-ax.bar(df["payment_type"], df["count"], color='steelblue')
-ax.set_xlabel("Payment Method")
-ax.set_ylabel("Number of Orders")
-ax.set_title("Number of Orders by Payment Method")
-ax.set_ylim(0, 80000)  # Adjusting the y-axis for better visualization
-plt.xticks(rotation=0)
+fig = px.bar(df, x="payment_type", y="count", color_discrete_sequence=["steelblue"], 
+             labels={"payment_type": "Payment Method", "count": "Number of Orders"}, 
+             title="Number of Orders by Payment Method")
+fig.update_layout(yaxis_range=[0, 80000], xaxis_tickangle=0)
 
 # Display Chart
-st.pyplot(fig)
+st.plotly_chart(fig)
 
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method "):
