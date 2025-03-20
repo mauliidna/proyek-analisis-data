@@ -35,9 +35,10 @@ filtered_df = all_df[(all_df["payment_type"].isin(selected_payment)) & (all_df["
 
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
 st.subheader("Number of Orders by Payment Method")
-payment_counts = payment_df["payment_type"].value_counts()
+payment_counts = filtered_df["payment_type"].value_counts()
 payment_fig = px.bar(payment_counts, x=payment_counts.index, y=payment_counts.values, labels={'x': "Payment Method", 'y': "Number of Orders"}, title="Number of Orders by Payment Method")
 st.plotly_chart(payment_fig)
+plt.figure(figsize=(8, 6)
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method "):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
