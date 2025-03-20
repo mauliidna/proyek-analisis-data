@@ -35,10 +35,30 @@ day_range = st.sidebar.slider("Rentang Waktu Review (hari)", int(all_df["days_to
 filtered_df = all_df[(all_df["payment_type"].isin(selected_payment)) & (all_df["days_to_review"].between(day_range[0], day_range[1]))]
 
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
-st.subheader("Number of Orders by Payment Method")
-payment_counts = filtered_df["payment_type"].value_counts()
-payment_fig = px.bar(payment_counts, x=payment_counts.index, y=payment_counts.values, labels={'x': "Payment Method", 'y': "Number of Orders"}, title="Number of Orders by Payment Method")
-st.plotly_chart(payment_fig)
+# Data
+payment_data = {
+    "payment_type": ["credit_card", "boleto", "voucher", "debit_card", "not_defined"],
+    "count": [76795, 19784, 5775, 1529, 3]
+}
+
+# Convert to DataFrame
+df = pd.DataFrame(payment_data)
+
+# Streamlit App
+st.title("Number of Orders by Payment Method")
+
+# Create Bar Chart
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.bar(df["payment_type"], df["count"], color='steelblue')
+ax.set_xlabel("Payment Method")
+ax.set_ylabel("Number of Orders")
+ax.set_title("Number of Orders by Payment Method")
+ax.set_ylim(0, 80000)  # Adjusting the y-axis for better visualization
+plt.xticks(rotation=0)
+
+# Display Chart
+st.pyplot(fig)
+
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method "):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
