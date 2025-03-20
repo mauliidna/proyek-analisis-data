@@ -1,7 +1,6 @@
 import streamlit as st
-import seaborn as sns
-import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.express as px
 
 # Judul Dashboard
 st.subheader("MC009D5X2352 | Mauldina Rahmawati")
@@ -40,17 +39,16 @@ filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_revi
 
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
 st.subheader("Number of Orders by Payment Method")
-payment_counts = filtered_df["payment_type"].value_counts()
+payment_counts = filtered_df["payment_type"].value_counts().reset_index()
+payment_counts.columns = ['payment_type', 'order_count']
 
-# Menggunakan sns.countplot dengan filtered_df
-plt.figure(figsize=(8, 6))
-sns.countplot(x='payment_type', data=payment_df)
-plt.title('Number of Orders by Payment Method')
-plt.xlabel('Payment Method')
-plt.ylabel('Number of Orders')
+# Menggunakan Plotly untuk membuat bar chart
+fig = px.bar(payment_counts, x='payment_type', y='order_count', title='Number of Orders by Payment Method',
+              labels={'payment_type': 'Payment Method', 'order_count': 'Number of Orders'},
+              color='order_count', color_continuous_scale=px.colors.sequential.Viridis)
 
 # Menampilkan plot di Streamlit
-st.pyplot(plt)
+st.plotly_chart(fig)
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
@@ -65,22 +63,26 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
 
-merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
-
-# Menangani nilai negatif dengan mengatur nilai minimum ke 0
-merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
-
+# Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
+st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 # Plot distribusi
-plt.figure(figsize=(10, 5))
-sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
+fig2 = px.histogram(df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai",
+                     labels={'days_to_review': 'Hari setelah barang sampai'},
+                     histnorm='count')
 
-# Garis median
-plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+# Menambahkan median_line = df["days_to_review"].median()
+fig2.add_vline(x=median_line, line_color='red', line_dash='dash', annotation_text='Median', annotation_position='top right')
 
-# Label dan judul
-plt.xlabel("Hari setelah barang sampai")
-plt.ylabel("Jumlah Review")
-plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-plt.legend()
-plt.grid(True)
-plt.show()
+# Menampilkan plot di Streamlit
+st.plotly_chart(fig2)
+
+with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review Setelah Barang Sampai"):
+    st.write("Grafik ini menunjukkan distribusi waktu yang dibutuhkan pelanggan untuk memberikan review setelah barang diterima. Dari sini, kita dapat melihat pola dan kecenderungan dalam waktu pembuatan review.")
+    st.markdown("**Insight:**")
+    st.write("- **Waktu Pembuatan Review Bervariasi:** Beberapa pelanggan memberikan review segera setelah menerima barang, sementara yang lain mungkin membutuhkan waktu lebih lama.")
+    st.write("- **Median Waktu:** Garis median menunjukkan waktu rata-rata yang dihabiskan pelanggan untuk memberikan review.")
+    st.write("- **Pentingnya Umpan Balik:** Memahami waktu pembuatan review dapat membantu dalam strategi pemasaran dan pengembangan produk.")
+
+    st.markdown("**Potensi Tindakan Bisnis:**")
+    st.write("- Mendorong pelanggan untuk memberikan review lebih cepat melalui pengingat atau insentif.")
+    st.write("- Menganalisis faktor-faktor yang mempengaruhi waktu pembuatan review untuk meningkatkan pengalaman pelanggan.")
