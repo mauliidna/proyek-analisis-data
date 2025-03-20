@@ -41,11 +41,11 @@ filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_revi
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
 st.subheader("Number of Orders by Payment Method")
 plt.figure(figsize=(8, 6))
-sns.countplot(x='payment_type', data=filtered_df)
+sns.countplot(x='payment_type', data=payment_df)
 plt.title('Number of Orders by Payment Method')
 plt.xlabel('Payment Method')
 plt.ylabel('Number of Orders')
-st.pyplot(plt)
+plt.show()
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
@@ -60,16 +60,28 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
     st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
 
+
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+
+# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
+
+# Plot distribusi
 plt.figure(figsize=(10, 5))
-sns.histplot(df["days_to_review"], bins=50, kde=True)
-plt.axvline(df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
+
+# Garis median
+plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+
+# Label dan judul
 plt.xlabel("Hari setelah barang sampai")
 plt.ylabel("Jumlah Review")
 plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 plt.legend()
 plt.grid(True)
+
+# Menampilkan plot di Streamlit
 st.pyplot(plt)
 
 with st.expander("ℹ️ Pen jelasan Grafik: Distribusi Waktu Pembuatan Review Setelah Barang Sampai"):
