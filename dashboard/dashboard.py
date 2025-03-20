@@ -39,8 +39,12 @@ filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_revi
 
 # Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
 st.subheader("Number of Orders by Payment Method")
-payment_counts = filtered_df["payment_type"].value_counts().reset_index()
-payment_counts.columns = ['payment_type', 'order_count']
+plt.figure(figsize=(8, 6))
+sns.countplot(x='payment_type', data=payment_df)
+plt.title('Number of Orders by Payment Method')
+plt.xlabel('Payment Method')
+plt.ylabel('Number of Orders')
+plt.show()
 
 # Menggunakan Plotly untuk membuat bar chart
 fig = px.bar(payment_counts, x='payment_type', y='order_count', title='Number of Orders by Payment Method',
