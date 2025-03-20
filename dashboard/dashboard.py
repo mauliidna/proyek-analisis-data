@@ -48,7 +48,7 @@ df = pd.DataFrame(payment_data)
 st.title("Number of Orders by Payment Method")
 
 # Create Bar Chart
-fig = px.bar(df, x="payment_type", y="count", color_discrete_sequence=["steelblue"], 
+fig = px.bar(df, x="payment_type", y="count", color_discrete_sequence=["blue"], 
              labels={"payment_type": "Payment Method", "count": "Number of Orders"}, 
              title="Number of Orders by Payment Method")
 fig.update_layout(yaxis_range=[0, 80000], xaxis_tickangle=0)
