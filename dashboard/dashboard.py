@@ -42,12 +42,15 @@ filtered_df = df[(df["payment_type"].isin(selected_payment)) & (df["days_to_revi
 st.subheader("Number of Orders by Payment Method")
 payment_counts = filtered_df["payment_type"].value_counts()
 
+# Menggunakan sns.countplot dengan filtered_df
 plt.figure(figsize=(8, 6))
-sns.countplot(x='payment_type', data=payment_df)
+sns.countplot(x='payment_type', data=filtered_df)
 plt.title('Number of Orders by Payment Method')
 plt.xlabel('Payment Method')
 plt.ylabel('Number of Orders')
-plt.show()
+
+# Menampilkan plot di Streamlit
+st.pyplot(plt)
 
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan. Dari sini, kita dapat melihat metode pembayaran yang paling populer serta perbandingannya dengan metode lain.")
@@ -58,35 +61,4 @@ with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method")
     st.write("- **Kategori 'not_defined' Hampir Tidak Ada:** Mungkin terjadi karena kesalahan data atau metode pembayaran yang sangat jarang digunakan.")
     
     st.markdown("**Potensi Tindakan Bisnis:**")
-    st.write("- Menawarkan insentif untuk pembayaran non-kartu kredit, seperti diskon untuk boleto.")
-    st.write("- Mendorong penggunaan kartu kredit untuk mempercepat transaksi.")
-    st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet untuk menarik lebih banyak pelanggan.")
-
-# Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
-merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
-
-# Menangani nilai negatif dengan mengatur nilai minimum ke 0
-merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
-
-# Plot distribusi
-plt.figure(figsize=(10, 5))
-sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
-
-# Garis median
-plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
-
-# Label dan judul
-plt.xlabel("Hari setelah barang sampai")
-plt.ylabel("Jumlah Review")
-plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-plt.legend()
-plt.grid(True)
-plt.show()
-
-with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
-    st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya. Dari pola distribusi, kita bisa memahami kebiasaan pelanggan dalam memberikan feedback.")
-    
-    st.markdown("**Insight:**")
-    st.write("- **Mayoritas Review Dibuat Cepat:** Sebagian besar pelanggan memberikan review pada hari barang tiba atau beberapa hari setelahnya.")
-    st.write("- **Review Lama Setelah Barang Sampai (Outlier Positif):** Beberapa pelanggan menunggu hingga mereka benar-benar yakin atau setelah menerima pengingat dari platform.")
-    st.write("- **Median 0 Hari:** Setengah dari total review diberikan pada hari barang sampai, menunjukkan adanya dorongan kuat dari notifikasi atau insentif dari e-commerce.")
+    st.write("- Menawarkan insentif untuk pembayaran non
