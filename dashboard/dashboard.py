@@ -12,8 +12,11 @@ def load_data():
 payment_df, review_df, order_df = load_data()
 
 # Pastikan kolom tanggal dalam format datetime
+order_df["order_delivered_customer_date"] = pd.to_datetime(order_df["order_delivered_customer_date"])
 review_df["review_creation_date"] = pd.to_datetime(review_df["review_creation_date"])
-review_df["order_delivered_customer_date"] = pd.to_datetime(review_df["order_delivered_customer_date"])
+
+# Merge review_df dengan order_df untuk mendapatkan order_delivered_customer_date
+review_df = review_df.merge(order_df[["order_id", "order_delivered_customer_date"]], on="order_id", how="left")
 
 # Buat kolom days_to_review jika belum ada
 if "days_to_review" not in review_df.columns:
