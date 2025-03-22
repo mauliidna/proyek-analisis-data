@@ -24,7 +24,7 @@ all_df = load_data()
 
 # Plot distribusi
 plt.figure(figsize=(10, 5))
-sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
+sns.histplot(all_df["days_to_review"], bins=50, kde=True)
 
 # ✅ Buat kolom days_to_review jika belum ada
 # review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
