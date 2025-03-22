@@ -62,15 +62,8 @@ st.plotly_chart(payment_fig)
 with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method "):
     st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan.")
 
-# Konversi ke datetime
-all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"])
-all_df["review_creation_date"] = pd.to_datetime(all_df["review_creation_date"])
+st.write("Kolom yang tersedia di all_df:", all_df.columns)
 
-# Hitung selisih waktu dalam hari antara review dan barang sampai
-all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
-
-# Hapus nilai negatif dari days_to_review
-all_df = all_df[all_df["days_to_review"] >= 0]
 
 
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
