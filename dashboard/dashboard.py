@@ -21,8 +21,8 @@ review_df = review_df.merge(order_df[["order_id", "order_delivered_customer_date
 # Buat kolom days_to_review jika belum ada
 review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
 
-# Bersihkan data: Hapus nilai negatif pada days_to_review
-review_df = review_df[review_df["days_to_review"] >= 0]
+# Bersihkan data: Hanya ambil nilai days_to_review yang >= 0 dan bukan NaN
+review_df = review_df[(review_df["days_to_review"] >= 0) & (review_df["days_to_review"].notna())]
 
 # Streamlit App
 st.set_page_config(layout="wide")
@@ -66,11 +66,3 @@ with col2:
         st.write("- Jika mayoritas pelanggan memberikan ulasan dalam jangka waktu tertentu, maka strategi promosi atau reminder dapat difokuskan pada periode tersebut untuk meningkatkan engagement.")
         st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
         st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
-
-st.write("Ringkasan Data Review setelah Filter:")
-st.dataframe(filtered_review_df.describe())
-
-st.write("Jumlah data review sebelum filtering:", review_df.shape[0])
-st.write("Jumlah data review setelah filtering:", filtered_review_df.shape[0])
-
-
