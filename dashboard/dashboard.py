@@ -58,11 +58,29 @@ with col1:
 
 with col2:
     st.subheader("Waktu yang Dibutuhkan untuk Memberikan Ulasan")
-    fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"}, marginal="rug")
+
+    # Hitung median
+    median_value = filtered_review_df["days_to_review"].median()
+
+    # Buat histogram
+    fig2 = px.histogram(
+        filtered_review_df,
+        x="days_to_review",
+        nbins=50,
+        title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai",
+        labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"},
+        marginal="rug"
+    )
+
+    # Tambahkan garis vertikal untuk median
+    fig2.add_vline(x=median_value, line_dash="dash", line_color="red", annotation_text=f"Median: {median_value:.0f}", annotation_position="top right")
+
+    # Tampilkan plot
     st.plotly_chart(fig2)
-    
+
     with st.expander("Insight"):
         st.write("- Visualisasi ini menunjukkan sebaran waktu yang dibutuhkan pelanggan untuk memberikan ulasan setelah barang diterima.")
+        st.write(f"- Median waktu review adalah **{median_value:.0f} hari**, yang berarti setengah dari pelanggan memberikan ulasan dalam waktu kurang dari {median_value:.0f} hari setelah barang diterima.")
         st.write("- Jika mayoritas pelanggan memberikan ulasan dalam jangka waktu tertentu, maka strategi promosi atau reminder dapat difokuskan pada periode tersebut untuk meningkatkan engagement.")
         st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
         st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
