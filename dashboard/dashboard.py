@@ -10,10 +10,6 @@ st.title("Dashboard Analisis Review dan Pembayaran")
 # Load dataset dari GitHub
 all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/refs/heads/main/dashboard/all_data.csv")
 
-# Pastikan data yang digunakan sesuai untuk masing-masing grafik
-payment_df = all_df[['payment_type']].dropna()
-review_df = all_df[['days_to_review']].dropna()
-
 # Grafik 1: Bar chart metode pembayaran
 st.title("Number of Orders by Payment Method")
 
