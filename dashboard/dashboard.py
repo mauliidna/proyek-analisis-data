@@ -6,10 +6,11 @@ import plotly.express as px
 url = "https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/all_data.csv"
 all_df = pd.read_csv(url)
 
-# Cek apakah dataset berhasil dimuat
+# Debugging: Cek isi dataset
 st.write("Kolom yang tersedia dalam dataset:", all_df.columns.tolist())
+st.write("Preview data:", all_df.head())
 
-# Plot 1: Bar Chart - Payment Type
+# ---- PLOT 1: Payment Type ----
 if 'payment_type' in all_df.columns:
     payment_df = all_df['payment_type'].value_counts().reset_index()
     payment_df.columns = ['payment_type', 'count']
@@ -21,14 +22,14 @@ if 'payment_type' in all_df.columns:
 else:
     st.error("Kolom 'payment_type' tidak ditemukan dalam dataset.")
 
-# Plot 2: Histogram - Days to Review
+# ---- PLOT 2: Days to Review ----
 if 'days_to_review' in all_df.columns:
     fig2 = px.histogram(all_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", 
                         marginal="box", opacity=0.7)
-    
+
     # Tambahkan garis median
     median_value = all_df["days_to_review"].median()
-    fig2.add_vline(x=median_value, line_dash="dash", line_color="red", annotation_text="Median", annotation_position="top left")
+    fig2.add_vline(x=median_value, line_dash="dash", line_color="red", annotation_text=f"Median: {median_value:.2f}", annotation_position="top left")
 
     fig2.update_layout(xaxis_title="Hari setelah barang sampai", yaxis_title="Jumlah Review")
 
