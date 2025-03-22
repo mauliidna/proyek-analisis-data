@@ -1,73 +1,54 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 
-# Judul Dashboard
-st.subheader("MC009D5X2352 | Mauldina Rahmawati")
-st.title("Dashboard Analisis Review dan Pembayaran")
+# Load Data
+def load_data():
+    payment_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/order_payments_dataset.csv")
+    review_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/order_reviews_dataset.csv")
+    return payment_df, review_df
 
-# Load dataset dari GitHub
-url = "https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/selected_data.csv"
-all_df = pd.read_csv(url)
+payment_df, review_df = load_data()
 
-# Konversi ke datetime jika belum dilakukan
-all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"], errors='coerce')
-all_df["review_creation_date"] = pd.to_datetime(all_df["review_creation_date"], errors='coerce')
+# Streamlit App
+st.set_page_config(layout="wide")
+st.title("Analisis Data E-Commerce")
 
-# Hitung selisih waktu dalam hari antara review dan barang sampai
-all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
+# Layout dengan sidebar
+with st.sidebar:
+    st.header("Filter Data")
+    selected_payment_methods = st.multiselect("Pilih Metode Pembayaran", payment_df["payment_type"].unique(), default=payment_df["payment_type"].unique())
+    min_days = int(review_df["days_to_review"].min())
+    max_days = int(review_df["days_to_review"].max())
+    days_range = st.slider("Pilih Rentang Hari untuk Review", min_value=min_days, max_value=max_days, value=(min_days, max_days))
 
-# Hapus nilai negatif dari days_to_review
-all_df = all_df[all_df["days_to_review"] >= 0]
+# Filter data
+filtered_payment_df = payment_df[payment_df["payment_type"].isin(selected_payment_methods)]
+filtered_review_df = review_df[(review_df["days_to_review"] >= days_range[0]) & (review_df["days_to_review"] <= days_range[1])]
 
-# Sidebar Filter
-st.sidebar.header("Filter Data")
-payment_options = all_df["payment_type"].unique()
-selected_payment = st.sidebar.multiselect("Pilih Metode Pembayaran", payment_options, default=payment_options)
-day_range = st.sidebar.slider("Rentang Waktu Review (hari)", int(all_df["days_to_review"].min()), int(all_df["days_to_review"].max()), (int(all_df["days_to_review"].min()), int(all_df["days_to_review"].max())))
+# Layout untuk visualisasi
+col1, col2 = st.columns(2)
 
-# Filter Data
-filtered_df = all_df[(all_df["payment_type"].isin(selected_payment)) & (all_df["days_to_review"].between(day_range[0], day_range[1]))]
+with col1:
+    st.subheader("Metode Pembayaran yang Paling Sering Digunakan")
+    payment_counts = filtered_payment_df["payment_type"].value_counts().reset_index()
+    payment_counts.columns = ["payment_type", "count"]
+    fig = px.bar(payment_counts, x="payment_type", y="count", title="Number of Orders by Payment Method", labels={"payment_type": "Payment Method", "count": "Number of Orders"})
+    st.plotly_chart(fig)
+    
+    with st.expander("Insight"):
+        st.write("- Dari visualisasi di atas, kita dapat melihat metode pembayaran yang paling sering digunakan oleh pelanggan.")
+        st.write("- Jika terdapat dominasi metode pembayaran tertentu, hal ini bisa menjadi peluang untuk meningkatkan kenyamanan transaksi pada metode tersebut.")
+        st.write("- Jika metode pembayaran tertentu jarang digunakan, bisa jadi pelanggan kurang familiar atau terdapat kendala dalam penggunaannya.")
+        st.write("- Menganalisis tren ini dapat membantu bisnis dalam menawarkan promo atau cashback pada metode pembayaran yang ingin lebih ditingkatkan penggunaannya.")
 
-# Grafik 1: Jumlah Pesanan Berdasarkan Metode Pembayaran
-st.subheader("Number of Orders by Payment Method")
-payment_counts = filtered_df["payment_type"].value_counts()
-payment_fig = px.bar(payment_counts, x=payment_counts.index, y=payment_counts.values, labels={'x': "Payment Method", 'y': "Number of Orders"}, title="Number of Orders by Payment Method")
-st.plotly_chart(payment_fig)
-
-# Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
-
-# Konversi ke datetime
-all_df["review_creation_date"] = pd.to_datetime(all_df["review_creation_date"], errors='coerce')
-all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"], errors='coerce')
-
-# Hitung selisih hari antara review dan barang sampai
-all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
-
-# Menangani nilai negatif dan NaN
-all_df["days_to_review"] = all_df["days_to_review"].clip(lower=0)
-all_df = all_df.dropna(subset=["days_to_review"])  # Hapus NaN agar tidak error
-
-# Hitung median dengan aman
-median_value = all_df["days_to_review"].median(skipna=True)  # Hindari error karena NaN
-
-# Judul
-st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-
-# Histogram dengan Plotly
-hist_fig = px.histogram(all_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review",
-                        labels={'days_to_review': "Hari setelah barang sampai"}, marginal="rug")
-
-# Garis Median (Cek apakah median_value valid sebelum ditambahkan)
-if not pd.isna(median_value):
-    hist_fig.add_trace(go.Scatter(x=[median_value, median_value], 
-                                  y=[0, all_df["days_to_review"].value_counts().max()], 
-                                  mode="lines", line=dict(color="red", dash="dash"), name="Median"))
-
-# Tampilkan grafik di Streamlit
-st.plotly_chart(hist_fig)
-
-# Tambahkan informasi tambahan
-with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
-    st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya.")
+with col2:
+    st.subheader("Waktu yang Dibutuhkan untuk Memberikan Ulasan")
+    fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"}, marginal="rug")
+    st.plotly_chart(fig2)
+    
+    with st.expander("Insight"):
+        st.write("- Visualisasi ini menunjukkan sebaran waktu yang dibutuhkan pelanggan untuk memberikan ulasan setelah barang diterima.")
+        st.write("- Jika mayoritas pelanggan memberikan ulasan dalam jangka waktu tertentu, maka strategi promosi atau reminder dapat difokuskan pada periode tersebut untuk meningkatkan engagement.")
+        st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
+        st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
