@@ -45,7 +45,7 @@ with st.expander("🔎 Insight"):
     st.write("- Kategori 'not_defined' Hampir Tidak Ada: Kemungkinan error data atau metode pembayaran yang jarang digunakan.")
 
 st.subheader("⏳ Waktu yang Dibutuhkan untuk Memberikan Ulasan")
-fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
+fig2 = px.histogram(all_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
 fig2.update_yaxes(range=[0, 175000])  
 fig2.add_vline(x=all_df["days_to_review"].median(), line_dash="dash", line_color="red", annotation_text="Median", annotation_position="top right")
 st.plotly_chart(fig2)
