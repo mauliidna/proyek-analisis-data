@@ -39,14 +39,14 @@ st.title("📊 Analisis Data E-Commerce")
 # 🛍️ Layout dengan sidebar
 with st.sidebar:
     st.header("🔍 Filter Data")
-    selected_payment_methods = st.multiselect("Pilih Metode Pembayaran", payment_df["payment_type"].unique(), default=payment_df["payment_type"].unique())
-    min_days = int(review_df["days_to_review"].min())
-    max_days = int(review_df["days_to_review"].max())
+    selected_payment_methods = st.multiselect("Pilih Metode Pembayaran", all_df["payment_type"].unique(), default=all_df["payment_type"].unique())
+    min_days = int(all_df["days_to_review"].min())
+    max_days = int(all_df["days_to_review"].max())
     days_range = st.slider("Pilih Rentang Hari untuk Review", min_value=min_days, max_value=max_days, value=(min_days, max_days))
 
 # 🔍 Filter data
-filtered_payment_df = payment_df[payment_df["payment_type"].isin(selected_payment_methods)]
-filtered_review_df = review_df[(review_df["days_to_review"] >= days_range[0]) & (review_df["days_to_review"] <= days_range[1])]
+filtered_payment_df = all_df[all_df["payment_type"].isin(selected_payment_methods)]
+filtered_review_df = all_df[(all_df["days_to_review"] >= days_range[0]) & (all_df["days_to_review"] <= days_range[1])]
 
 # 🔄 Layout untuk visualisasi
 st.subheader("💳 Metode Pembayaran yang Paling Sering Digunakan")
