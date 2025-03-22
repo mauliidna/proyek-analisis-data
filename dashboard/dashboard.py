@@ -10,16 +10,6 @@ st.title("Dashboard Analisis Review dan Pembayaran")
 data_url = "https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/all_data.csv"
 all_df = pd.read_csv(data_url)
 
-# Konversi ke datetime
-all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"])
-all_df["review_creation_date"] = pd.to_datetime(all_df["review_creation_date"])
-
-# Hitung selisih waktu dalam hari antara review dan barang sampai
-all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
-
-# Hapus nilai negatif dari days_to_review
-all_df = all_df[all_df["days_to_review"] >= 0]
-
 # Sidebar Filter
 st.sidebar.header("Filter Data")
 payment_options = all_df["payment_type"].unique()
