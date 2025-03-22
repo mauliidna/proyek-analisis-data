@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 # Judul Dashboard
 st.subheader("MC009D5X2352 | Mauldina Rahmawati")
@@ -44,8 +45,12 @@ all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered
 # Hitung selisih hari antara review dan barang sampai
 all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
 
-# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+# Menangani nilai negatif dan NaN
 all_df["days_to_review"] = all_df["days_to_review"].clip(lower=0)
+all_df = all_df.dropna(subset=["days_to_review"])  # Hapus NaN agar tidak error
+
+# Hitung median dengan aman
+median_value = all_df["days_to_review"].median(skipna=True)  # Hindari error karena NaN
 
 # Judul
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
@@ -54,11 +59,11 @@ st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 hist_fig = px.histogram(all_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review",
                         labels={'days_to_review': "Hari setelah barang sampai"}, marginal="rug")
 
-# Garis Median
-median_value = all_df["days_to_review"].median()
-hist_fig.add_trace(go.Scatter(x=[median_value, median_value], 
-                              y=[0, all_df["days_to_review"].value_counts().max()], 
-                              mode="lines", line=dict(color="red", dash="dash"), name="Median"))
+# Garis Median (Cek apakah median_value valid sebelum ditambahkan)
+if not pd.isna(median_value):
+    hist_fig.add_trace(go.Scatter(x=[median_value, median_value], 
+                                  y=[0, all_df["days_to_review"].value_counts().max()], 
+                                  mode="lines", line=dict(color="red", dash="dash"), name="Median"))
 
 # Tampilkan grafik di Streamlit
 st.plotly_chart(hist_fig)
