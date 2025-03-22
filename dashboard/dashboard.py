@@ -6,7 +6,7 @@ import plotly.express as px
 st.subheader("MC009D5X2352 | Mauldina Rahmawati")
 st.title("Dashboard Analisis Review dan Pembayaran")
 
-# Load dataset dari GitHub
+# Load dataset dari GitHub (sudah bersih)
 data_url = "https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/all_data.csv"
 all_df = pd.read_csv(data_url)
 
@@ -14,6 +14,8 @@ all_df = pd.read_csv(data_url)
 st.sidebar.header("Filter Data")
 payment_options = all_df["payment_type"].unique()
 selected_payment = st.sidebar.multiselect("Pilih Metode Pembayaran", payment_options, default=payment_options)
+
+# Pastikan kolom days_to_review ada dan tidak negatif
 day_range = st.sidebar.slider("Rentang Waktu Review (hari)", int(all_df["days_to_review"].min()), int(all_df["days_to_review"].max()), 
                               (int(all_df["days_to_review"].min()), int(all_df["days_to_review"].max())))
 
@@ -33,18 +35,6 @@ payment_fig = px.bar(payment_counts, x="payment_type", y="count",
 
 st.plotly_chart(payment_fig)
 
-with st.expander("ℹ️ Penjelasan Grafik: Number of Orders by Payment Method"):
-    st.write("Grafik ini menunjukkan jumlah pesanan berdasarkan metode pembayaran yang digunakan oleh pelanggan.")
-    st.markdown("**Insight:**")
-    st.write("- **Kartu Kredit Dominan:** Mayoritas pesanan dibayar dengan kartu kredit.")
-    st.write("- **Boleto sebagai Alternatif:** Digunakan oleh pelanggan yang tidak memiliki kartu kredit.")
-    st.write("- **Voucher & Debit Card Kurang Populer:** Biasanya digunakan dalam promo.")
-    st.write("- **Kategori 'not_defined' Hampir Tidak Ada:** Bisa jadi karena kesalahan data.")
-    
-    st.markdown("**Potensi Tindakan Bisnis:**")
-    st.write("- Menawarkan diskon untuk pembayaran selain kartu kredit.")
-    st.write("- Mengeksplorasi metode pembayaran lain seperti e-wallet.")
-
 # ---- Grafik 2: Distribusi Waktu Review ----
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
 
@@ -59,11 +49,3 @@ days_fig.add_vline(x=median_value, line_dash="dash", line_color="red",
                    annotation_text=f"Median: {median_value:.2f} hari", annotation_position="top left")
 
 st.plotly_chart(days_fig)
-
-with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
-    st.write("Grafik ini menunjukkan berapa lama pelanggan butuh untuk memberikan review setelah menerima barang.")
-    
-    st.markdown("**Insight:**")
-    st.write("- **Mayoritas Review Dibuat Cepat:** Banyak yang langsung review setelah barang sampai.")
-    st.write("- **Beberapa Review Lama:** Bisa jadi mereka menunggu hingga yakin.")
-    st.write("- **Median: 0 Hari** → Setengah dari review dibuat di hari yang sama.")
