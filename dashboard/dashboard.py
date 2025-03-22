@@ -51,7 +51,7 @@ with st.expander("🔎 Insight"):
     st.write("- Kartu Kredit Dominan: Mayoritas pesanan dibayar dengan kartu kredit, kemungkinan karena kemudahan transaksi dan fasilitas cicilan.")
     st.write("- Boleto sebagai Alternatif: Metode pembayaran populer kedua, digunakan oleh pelanggan tanpa kartu kredit atau yang lebih memilih pembayaran tunai.")
     st.write("- Voucher & Debit Card Kurang Populer: Digunakan dalam situasi tertentu seperti promo atau cashback.")
-    st.write("- Kategori "not_defined" Hampir Tidak Ada: Kemungkinan error data atau metode pembayaran yang jarang digunakan.")
+    st.write("- Kategori 'not_defined' Hampir Tidak Ada: Kemungkinan error data atau metode pembayaran yang jarang digunakan.")
 
 st.subheader("⏳ Waktu yang Dibutuhkan untuk Memberikan Ulasan")
 fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
