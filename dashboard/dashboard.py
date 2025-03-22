@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.express as px
 
 # Load dataset hasil cleaning
-all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/main_data.csv")
+all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/all_data.csv")
 
 # Cek apakah dataset berhasil dimuat
 st.write("Kolom yang tersedia dalam dataset:", all_df.columns.tolist())
