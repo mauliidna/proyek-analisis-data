@@ -48,10 +48,10 @@ fig = px.bar(payment_counts, x="payment_type", y="count", title="Number of Order
 st.plotly_chart(fig)
 
 with st.expander("🔎 Insight"):
-    st.write("- Dari visualisasi di atas, kita dapat melihat metode pembayaran yang paling sering digunakan oleh pelanggan.")
-    st.write("- Jika terdapat dominasi metode pembayaran tertentu, hal ini bisa menjadi peluang untuk meningkatkan kenyamanan transaksi pada metode tersebut.")
-    st.write("- Jika metode pembayaran tertentu jarang digunakan, bisa jadi pelanggan kurang familiar atau terdapat kendala dalam penggunaannya.")
-    st.write("- Menganalisis tren ini dapat membantu bisnis dalam menawarkan promo atau cashback pada metode pembayaran yang ingin lebih ditingkatkan penggunaannya.")
+    st.write("- Kartu Kredit Dominan: Mayoritas pesanan dibayar dengan kartu kredit, kemungkinan karena kemudahan transaksi dan fasilitas cicilan.")
+    st.write("- Boleto sebagai Alternatif: Metode pembayaran populer kedua, digunakan oleh pelanggan tanpa kartu kredit atau yang lebih memilih pembayaran tunai.")
+    st.write("- Voucher & Debit Card Kurang Populer: Digunakan dalam situasi tertentu seperti promo atau cashback.")
+    st.write("- Kategori "not_defined" Hampir Tidak Ada: Kemungkinan error data atau metode pembayaran yang jarang digunakan.")
 
 st.subheader("⏳ Waktu yang Dibutuhkan untuk Memberikan Ulasan")
 fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
@@ -60,7 +60,7 @@ fig2.add_vline(x=filtered_review_df["days_to_review"].median(), line_dash="dash"
 st.plotly_chart(fig2)
 
 with st.expander("🔎 Insight"):
-    st.write("- Visualisasi ini menunjukkan sebaran waktu yang dibutuhkan pelanggan untuk memberikan ulasan setelah barang diterima.")
-    st.write("- Jika mayoritas pelanggan memberikan ulasan dalam jangka waktu tertentu, maka strategi promosi atau reminder dapat difokuskan pada periode tersebut untuk meningkatkan engagement.")
-    st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
-    st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
+    st.write("- Mayoritas Review Dibuat Cepat: Sebagian besar pelanggan memberikan review pada hari barang tiba atau beberapa hari setelahnya.")
+    st.write("- Review Sebelum Barang Sampai (Outlier Negatif): Bisa terjadi karena kesalahan sistem atau review dari pengalaman sebelumnya.")
+    st.write("- Review Lama Setelah Barang Sampai (Outlier Positif): Beberapa pelanggan menunggu hingga mereka yakin atau setelah mendapat pengingat dari platform.")
+    st.write("- Median 0 Hari: Setengah dari total review diberikan pada hari barang sampai, menunjukkan dorongan kuat dari notifikasi atau insentif e-commerce.")
