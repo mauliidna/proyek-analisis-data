@@ -36,6 +36,33 @@ payment_fig = px.bar(payment_counts, x=payment_counts.index, y=payment_counts.va
 st.plotly_chart(payment_fig)
 
 # Grafik 2: Distribusi Waktu Pembuatan Review Setelah Barang Sampai
+
+# Konversi ke datetime
+all_df["review_creation_date"] = pd.to_datetime(all_df["review_creation_date"], errors='coerce')
+all_df["order_delivered_customer_date"] = pd.to_datetime(all_df["order_delivered_customer_date"], errors='coerce')
+
+# Hitung selisih hari antara review dan barang sampai
+all_df["days_to_review"] = (all_df["review_creation_date"] - all_df["order_delivered_customer_date"]).dt.days
+
+# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+all_df["days_to_review"] = all_df["days_to_review"].clip(lower=0)
+
+# Judul
 st.subheader("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
-days_fig = px.histogram(filtered_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review", labels={'days_to_review': "Hari setelah barang sampai"})
-st.plotly_chart(days_fig)
+
+# Histogram dengan Plotly
+hist_fig = px.histogram(all_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review",
+                        labels={'days_to_review': "Hari setelah barang sampai"}, marginal="rug")
+
+# Garis Median
+median_value = all_df["days_to_review"].median()
+hist_fig.add_trace(go.Scatter(x=[median_value, median_value], 
+                              y=[0, all_df["days_to_review"].value_counts().max()], 
+                              mode="lines", line=dict(color="red", dash="dash"), name="Median"))
+
+# Tampilkan grafik di Streamlit
+st.plotly_chart(hist_fig)
+
+# Tambahkan informasi tambahan
+with st.expander("ℹ️ Penjelasan Grafik: Distribusi Waktu Pembuatan Review"):
+    st.write("Grafik ini menunjukkan berapa lama waktu yang dibutuhkan pelanggan untuk memberikan review setelah mereka menerima barangnya.")
