@@ -15,14 +15,22 @@ payment_df, review_df, order_df = load_data()
 order_df["order_delivered_customer_date"] = pd.to_datetime(order_df["order_delivered_customer_date"], errors='coerce')
 review_df["review_creation_date"] = pd.to_datetime(review_df["review_creation_date"], errors='coerce')
 
-# 🔗 Merge review_df dengan order_df untuk mendapatkan order_delivered_customer_date
-review_df = review_df.merge(order_df[["order_id", "order_delivered_customer_date"]], on="order_id", how="left")
+# # 🔗 Merge review_df dengan order_df untuk mendapatkan order_delivered_customer_date
+# review_df = review_df.merge(order_df[["order_id", "order_delivered_customer_date"]], on="order_id", how="left")
+
+merged_df["days_to_review"] = (review_df["review_creation_date"] - order_df["order_delivered_customer_date"]).dt.days
+# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
+
+# Plot distribusi
+plt.figure(figsize=(10, 5))
+sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
 
 # ✅ Buat kolom days_to_review jika belum ada
 review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
 
-# 🔧 Bersihkan data: Hanya ambil nilai days_to_review yang >= 0 dan bukan NaN
-review_df = review_df[(review_df["days_to_review"] >= 0) & (review_df["days_to_review"].notna())]
+# # 🔧 Bersihkan data: Hanya ambil nilai days_to_review yang >= 0 dan bukan NaN
+# review_df = review_df[(review_df["days_to_review"] >= 0) & (review_df["days_to_review"].notna())]
 
 # 🌐 Streamlit App
 st.set_page_config(layout="wide")
