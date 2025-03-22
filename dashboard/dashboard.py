@@ -6,9 +6,18 @@ import plotly.express as px
 def load_data():
     payment_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/order_payments_dataset.csv")
     review_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/order_reviews_dataset.csv")
-    return payment_df, review_df
+    order_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/orders_dataset.csv")
+    return payment_df, review_df, order_df
 
-payment_df, review_df = load_data()
+payment_df, review_df, order_df = load_data()
+
+# Pastikan kolom tanggal dalam format datetime
+review_df["review_creation_date"] = pd.to_datetime(review_df["review_creation_date"])
+review_df["order_delivered_customer_date"] = pd.to_datetime(review_df["order_delivered_customer_date"])
+
+# Buat kolom days_to_review jika belum ada
+if "days_to_review" not in review_df.columns:
+    review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
 
 # Streamlit App
 st.set_page_config(layout="wide")
@@ -39,16 +48,4 @@ with col1:
     with st.expander("Insight"):
         st.write("- Dari visualisasi di atas, kita dapat melihat metode pembayaran yang paling sering digunakan oleh pelanggan.")
         st.write("- Jika terdapat dominasi metode pembayaran tertentu, hal ini bisa menjadi peluang untuk meningkatkan kenyamanan transaksi pada metode tersebut.")
-        st.write("- Jika metode pembayaran tertentu jarang digunakan, bisa jadi pelanggan kurang familiar atau terdapat kendala dalam penggunaannya.")
-        st.write("- Menganalisis tren ini dapat membantu bisnis dalam menawarkan promo atau cashback pada metode pembayaran yang ingin lebih ditingkatkan penggunaannya.")
-
-with col2:
-    st.subheader("Waktu yang Dibutuhkan untuk Memberikan Ulasan")
-    fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"}, marginal="rug")
-    st.plotly_chart(fig2)
-    
-    with st.expander("Insight"):
-        st.write("- Visualisasi ini menunjukkan sebaran waktu yang dibutuhkan pelanggan untuk memberikan ulasan setelah barang diterima.")
-        st.write("- Jika mayoritas pelanggan memberikan ulasan dalam jangka waktu tertentu, maka strategi promosi atau reminder dapat difokuskan pada periode tersebut untuk meningkatkan engagement.")
-        st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
-        st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
+        st.write("- Jika metode pembayaran tertentu jarang digunakan, bisa jadi pelanggan kurang familiar atau terdapat kendala dalam pen
