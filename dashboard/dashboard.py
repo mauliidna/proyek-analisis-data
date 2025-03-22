@@ -70,4 +70,7 @@ with col2:
 st.write("Ringkasan Data Review setelah Filter:")
 st.dataframe(filtered_review_df.describe())
 
+st.write("Jumlah data review sebelum filtering:", review_df.shape[0])
+st.write("Jumlah data review setelah filtering:", filtered_review_df.shape[0])
+
 
