@@ -12,15 +12,17 @@ def load_data():
 payment_df, review_df, order_df = load_data()
 
 # Pastikan kolom tanggal dalam format datetime
-order_df["order_delivered_customer_date"] = pd.to_datetime(order_df["order_delivered_customer_date"])
-review_df["review_creation_date"] = pd.to_datetime(review_df["review_creation_date"])
+order_df["order_delivered_customer_date"] = pd.to_datetime(order_df["order_delivered_customer_date"], errors='coerce')
+review_df["review_creation_date"] = pd.to_datetime(review_df["review_creation_date"], errors='coerce')
 
 # Merge review_df dengan order_df untuk mendapatkan order_delivered_customer_date
 review_df = review_df.merge(order_df[["order_id", "order_delivered_customer_date"]], on="order_id", how="left")
 
 # Buat kolom days_to_review jika belum ada
-if "days_to_review" not in review_df.columns:
-    review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
+review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
+
+# Bersihkan data: Hapus nilai negatif pada days_to_review
+review_df = review_df[review_df["days_to_review"] >= 0]
 
 # Streamlit App
 st.set_page_config(layout="wide")
