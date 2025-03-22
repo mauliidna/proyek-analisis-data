@@ -41,30 +41,26 @@ filtered_payment_df = payment_df[payment_df["payment_type"].isin(selected_paymen
 filtered_review_df = review_df[(review_df["days_to_review"] >= days_range[0]) & (review_df["days_to_review"] <= days_range[1])]
 
 # 🔄 Layout untuk visualisasi
-col1, col2 = st.columns(2)
+st.subheader("💳 Metode Pembayaran yang Paling Sering Digunakan")
+payment_counts = filtered_payment_df["payment_type"].value_counts().reset_index()
+payment_counts.columns = ["payment_type", "count"]
+fig = px.bar(payment_counts, x="payment_type", y="count", title="Number of Orders by Payment Method", labels={"payment_type": "Payment Method", "count": "Number of Orders"})
+st.plotly_chart(fig)
 
-with col1:
-    st.subheader("💳 Metode Pembayaran yang Paling Sering Digunakan")
-    payment_counts = filtered_payment_df["payment_type"].value_counts().reset_index()
-    payment_counts.columns = ["payment_type", "count"]
-    fig = px.bar(payment_counts, x="payment_type", y="count", title="Number of Orders by Payment Method", labels={"payment_type": "Payment Method", "count": "Number of Orders"})
-    st.plotly_chart(fig)
-    
-    with st.expander("🔎 Insight"):
-        st.write("- Dari visualisasi di atas, kita dapat melihat metode pembayaran yang paling sering digunakan oleh pelanggan.")
-        st.write("- Jika terdapat dominasi metode pembayaran tertentu, hal ini bisa menjadi peluang untuk meningkatkan kenyamanan transaksi pada metode tersebut.")
-        st.write("- Jika metode pembayaran tertentu jarang digunakan, bisa jadi pelanggan kurang familiar atau terdapat kendala dalam penggunaannya.")
-        st.write("- Menganalisis tren ini dapat membantu bisnis dalam menawarkan promo atau cashback pada metode pembayaran yang ingin lebih ditingkatkan penggunaannya.")
+with st.expander("🔎 Insight"):
+    st.write("- Dari visualisasi di atas, kita dapat melihat metode pembayaran yang paling sering digunakan oleh pelanggan.")
+    st.write("- Jika terdapat dominasi metode pembayaran tertentu, hal ini bisa menjadi peluang untuk meningkatkan kenyamanan transaksi pada metode tersebut.")
+    st.write("- Jika metode pembayaran tertentu jarang digunakan, bisa jadi pelanggan kurang familiar atau terdapat kendala dalam penggunaannya.")
+    st.write("- Menganalisis tren ini dapat membantu bisnis dalam menawarkan promo atau cashback pada metode pembayaran yang ingin lebih ditingkatkan penggunaannya.")
 
-with col2:
-    st.subheader("⏳ Waktu yang Dibutuhkan untuk Memberikan Ulasan")
-    fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
-    fig2.update_yaxes(range=[0, 400000])  # Mengatur rentang jumlah review hingga 400000
-    fig2.add_vline(x=filtered_review_df["days_to_review"].median(), line_dash="dash", line_color="red", annotation_text="Median", annotation_position="top right")
-    st.plotly_chart(fig2)
-    
-    with st.expander("🔎 Insight"):
-        st.write("- Visualisasi ini menunjukkan sebaran waktu yang dibutuhkan pelanggan untuk memberikan ulasan setelah barang diterima.")
-        st.write("- Jika mayoritas pelanggan memberikan ulasan dalam jangka waktu tertentu, maka strategi promosi atau reminder dapat difokuskan pada periode tersebut untuk meningkatkan engagement.")
-        st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
-        st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
+st.subheader("⏳ Waktu yang Dibutuhkan untuk Memberikan Ulasan")
+fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
+fig2.update_yaxes(range=[0, 400000])  # Mengatur rentang jumlah review hingga 400000
+fig2.add_vline(x=filtered_review_df["days_to_review"].median(), line_dash="dash", line_color="red", annotation_text="Median", annotation_position="top right")
+st.plotly_chart(fig2)
+
+with st.expander("🔎 Insight"):
+    st.write("- Visualisasi ini menunjukkan sebaran waktu yang dibutuhkan pelanggan untuk memberikan ulasan setelah barang diterima.")
+    st.write("- Jika mayoritas pelanggan memberikan ulasan dalam jangka waktu tertentu, maka strategi promosi atau reminder dapat difokuskan pada periode tersebut untuk meningkatkan engagement.")
+    st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
+    st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
