@@ -8,7 +8,7 @@ st.subheader("MC009D5X2352 | Mauldina Rahmawati")
 st.title("Dashboard Analisis Review dan Pembayaran")
 
 # Load dataset dari GitHub
-all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/refs/heads/main/dashboard/main_data.csv")
+all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/refs/heads/main/dashboard/all_data.csv")
 
 # Pastikan data yang digunakan sesuai untuk masing-masing grafik
 payment_df = all_df[['payment_type']].dropna()
