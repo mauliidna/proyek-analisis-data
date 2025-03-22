@@ -45,10 +45,53 @@ with st.expander("🔎 Insight"):
     st.write("- Kategori 'not_defined' Hampir Tidak Ada: Kemungkinan error data atau metode pembayaran yang jarang digunakan.")
 
 st.subheader("⏳ Waktu yang Dibutuhkan untuk Memberikan Ulasan")
-fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
-fig2.update_yaxes(range=[0, 400000])  # Mengatur rentang jumlah review hingga 400000
-fig2.add_vline(x=filtered_review_df["days_to_review"].median(), line_dash="dash", line_color="red", annotation_text="Median", annotation_position="top right")
-st.plotly_chart(fig2)
+# fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
+# fig2.update_yaxes(range=[0, 400000])  # Mengatur rentang jumlah review hingga 400000
+# fig2.add_vline(x=filtered_review_df["days_to_review"].median(), line_dash="dash", line_color="red", annotation_text="Median", annotation_position="top right")
+# st.plotly_chart(fig2)
+#----------------------------------------
+
+# Plot Histogram
+hist_fig = px.histogram(
+    all_df, x="days_to_review", nbins=50, title="Distribusi Waktu Review",
+    labels={'days_to_review': "Hari setelah barang sampai"}, marginal="rug"
+)
+
+# Tambahkan garis median
+if not pd.isna(median_value):
+    hist_fig.add_trace(go.Scatter(
+        x=[median_value, median_value],
+        y=[0, all_df["days_to_review"].value_counts().max()],
+        mode="lines",
+        line=dict(color="red", dash="dash"),
+        name="Median"
+    ))
+
+# Tampilkan di Streamlit
+st.plotly_chart(hist_fig)
+
+#-----------------------------------------------
+merged_df["review_creation_date"] = pd.to_datetime(merged_df["review_creation_date"])
+merged_df["order_delivered_customer_date"] = pd.to_datetime(merged_df["order_delivered_customer_date"])
+merged_df["days_to_review"] = (merged_df["review_creation_date"] - merged_df["order_delivered_customer_date"]).dt.days
+# Menangani nilai negatif dengan mengatur nilai minimum ke 0
+merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
+
+# Plot distribusi
+plt.figure(figsize=(10, 5))
+sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
+
+# Garis median
+plt.axvline(merged_df["days_to_review"].median(), color='red', linestyle='dashed', linewidth=1, label='Median')
+
+# Label dan judul
+plt.xlabel("Hari setelah barang sampai")
+plt.ylabel("Jumlah Review")
+plt.title("Distribusi Waktu Pembuatan Review Setelah Barang Sampai")
+plt.legend()
+plt.grid(True)
+plt.show()
+
 
 with st.expander("🔎 Insight"):
     st.write("- Mayoritas Review Dibuat Cepat: Sebagian besar pelanggan memberikan review pada hari barang tiba atau beberapa hari setelahnya.")
