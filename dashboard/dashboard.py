@@ -67,5 +67,7 @@ with col2:
         st.write("- Jika ada banyak pelanggan yang memberikan ulasan sangat lama setelah menerima barang, bisa jadi mereka hanya merespons ketika ada masalah dengan produk.")
         st.write("- Mengetahui pola ini dapat membantu dalam menentukan kapan sebaiknya pengingat ulasan dikirimkan untuk meningkatkan jumlah feedback pelanggan.")
 
-print(filtered_review_df["days_to_review"].describe())  # untuk Streamlit
+st.write("Ringkasan Data Review setelah Filter:")
+st.dataframe(filtered_review_df.describe())
+
 
