@@ -46,7 +46,7 @@ with st.expander("🔎 Insight"):
 
 st.subheader("⏳ Waktu yang Dibutuhkan untuk Memberikan Ulasan")
 fig2 = px.histogram(filtered_review_df, x="days_to_review", nbins=50, title="Distribusi Waktu Pembuatan Review Setelah Barang Sampai", labels={"days_to_review": "Hari setelah barang sampai", "count": "Jumlah Review"})
-fig2.update_yaxes(range=[0, all_df["days_to_review"].value_counts().max()])  
+fig2.update_yaxes(range=[0, 175000])  
 fig2.add_vline(x=all_df["days_to_review"].median(), line_dash="dash", line_color="red", annotation_text="Median", annotation_position="top right")
 st.plotly_chart(fig2)
 #----------------------------------------
@@ -68,7 +68,7 @@ st.plotly_chart(fig2)
 #     ))
 
 # Tampilkan di Streamlit
-st.plotly_chart(hist_fig)
+# st.plotly_chart(hist_fig)
 
 #-----------------------------------------------
 # merged_df["review_creation_date"] = pd.to_datetime(merged_df["review_creation_date"])
