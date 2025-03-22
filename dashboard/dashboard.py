@@ -7,7 +7,7 @@ st.subheader("MC009D5X2352 | Mauldina Rahmawati")
 st.title("Dashboard Analisis Review dan Pembayaran")
 
 # Load dataset dari GitHub
-url = "https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/all_data.csv"
+url = "https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/main/dashboard/selected_data.csv"
 all_df = pd.read_csv(url)
 
 # Konversi ke datetime jika belum dilakukan
