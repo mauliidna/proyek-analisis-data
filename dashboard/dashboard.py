@@ -6,7 +6,7 @@ import seaborn as sns
 
 # 📚 Load Data
 def load_data():
-    all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/refs/heads/main/dashboard/selected_data%20(1).csv")
+    all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/refs/heads/main/dashboard/main_data.csv")
     return all_df
 
 all_df = load_data()
