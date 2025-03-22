@@ -4,30 +4,28 @@ import plotly.express as px
 
 # 📚 Load Data
 def load_data():
-    payment_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/order_payments_dataset.csv")
-    review_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/order_reviews_dataset.csv")
-    order_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/data-data-proyek-analisis-data-python/refs/heads/main/orders_dataset.csv")
-    return payment_df, review_df, order_df
+    all_df = pd.read_csv("https://raw.githubusercontent.com/mauliidna/proyek-analisis-data/refs/heads/main/dashboard/selected_data%20(1).csv")
+    return all_df
 
-payment_df, review_df, order_df = load_data()
+all_df = load_data()
 
-# ⏰ Pastikan kolom tanggal dalam format datetime
-order_df["order_delivered_customer_date"] = pd.to_datetime(order_df["order_delivered_customer_date"], errors='coerce')
-review_df["review_creation_date"] = pd.to_datetime(review_df["review_creation_date"], errors='coerce')
+# # ⏰ Pastikan kolom tanggal dalam format datetime
+# order_df["order_delivered_customer_date"] = pd.to_datetime(order_df["order_delivered_customer_date"], errors='coerce')
+# review_df["review_creation_date"] = pd.to_datetime(review_df["review_creation_date"], errors='coerce')
 
 # # 🔗 Merge review_df dengan order_df untuk mendapatkan order_delivered_customer_date
 # review_df = review_df.merge(order_df[["order_id", "order_delivered_customer_date"]], on="order_id", how="left")
 
-merged_df["days_to_review"] = (review_df["review_creation_date"] - order_df["order_delivered_customer_date"]).dt.days
-# Menangani nilai negatif dengan mengatur nilai minimum ke 0
-merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
+# merged_df["days_to_review"] = (review_df["review_creation_date"] - order_df["order_delivered_customer_date"]).dt.days
+# # Menangani nilai negatif dengan mengatur nilai minimum ke 0
+# merged_df["days_to_review"] = merged_df["days_to_review"].clip(lower=0)
 
 # Plot distribusi
 plt.figure(figsize=(10, 5))
 sns.histplot(merged_df["days_to_review"], bins=50, kde=True)
 
 # ✅ Buat kolom days_to_review jika belum ada
-review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
+# review_df["days_to_review"] = (review_df["review_creation_date"] - review_df["order_delivered_customer_date"]).dt.days
 
 # # 🔧 Bersihkan data: Hanya ambil nilai days_to_review yang >= 0 dan bukan NaN
 # review_df = review_df[(review_df["days_to_review"] >= 0) & (review_df["days_to_review"].notna())]
